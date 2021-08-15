@@ -1,4 +1,4 @@
-import {App, Plugin, PluginManifest } from 'obsidian';
+import {App, Notice, Plugin, PluginManifest} from 'obsidian';
 import {SettingTab} from "./settingsTab";
 import {NoteFinderModal} from "./noteFinderModal";
 import {NoteRenameModal} from "./noteRenameModal";
@@ -70,10 +70,19 @@ export default class MyPlugin extends Plugin {
                 if (file != null) {
                     const parentNoteName = this.noteRenamer.getParentName(file)
 
-                    console.log(parentNoteName)
-                    if (parentNoteName != '') {
+                    if (parentNoteName !== null) {
                         const parents = this.noteRenamer.findParents(file)
-                        this.app.workspace.activeLeaf.openFile(parents.find((f) => f.basename == parentNoteName)).then()
+                        const parentFile = parents.find((f) => f.basename == parentNoteName)
+                        if (parentFile) {
+                            this.app.workspace.activeLeaf.openFile(parentFile).then()
+                        }else{
+                            new Notice("File does not exists. Create new one")
+                            this.app.vault.create('notes/' + parentNoteName + '.md', "# " + parentNoteName).then(
+                                (f) => this.app.workspace.activeLeaf.openFile(f).then()
+                            )
+                        }
+                    }else{
+                        new Notice("Root node")
                     }
                 }
             }

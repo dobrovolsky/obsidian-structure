@@ -28,10 +28,15 @@ export class NoteRenamer {
         })
     }
 
+    private static getFullPathWithoutExtension(path: string): string {
+        const ext = path.split(".")[-1] + 1
+        return path.slice(0, path.length - ext.length)
+    }
+
     findParents(file: TFile): TFile[] {
         const allNotes = this.findNotes()
         return allNotes.filter((n) => {
-            return file.basename.includes(n.basename) &&
+            return NoteRenamer.getFullPathWithoutExtension(file.path).includes(NoteRenamer.getFullPathWithoutExtension(n.path)) &&
                 n.parent == file.parent &&
                 n != file
         })
@@ -41,9 +46,13 @@ export class NoteRenamer {
         return this.app.vault.getFiles().filter((f) => f.extension == 'md');
     }
 
-    getParentName(file: TFile): string {
+    getParentName(file: TFile): string | null {
         const noteNamePath = file.basename.split('.')
-        noteNamePath.pop()
-        return noteNamePath.join('.')
+        if (noteNamePath.length > 1) {
+            noteNamePath.pop()
+            return noteNamePath.join('.')
+        }
+
+        return null
     }
 }
