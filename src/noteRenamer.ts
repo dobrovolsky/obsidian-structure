@@ -29,8 +29,8 @@ export class NoteRenamer {
     }
 
     private static getFullPathWithoutExtension(path: string): string {
-        const ext = path.split(".")[-1] + 1
-        return path.slice(0, path.length - ext.length)
+        const extLength = path.split(".").pop().length + 1
+        return path.slice(0, path.length - extLength)
     }
 
     findParents(file: TFile): TFile[] {
