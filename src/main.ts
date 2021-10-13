@@ -3,6 +3,7 @@ import {SettingTab} from "./settingsTab";
 import {NoteFinderModal} from "./noteFinderModal";
 import {NoteRenameModal} from "./noteRenameModal";
 import {NoteRenamer} from "./noteRenamer";
+import {openNoteInSplit} from "./utils";
 
 interface MyPluginSettings {
     mySetting: string;
@@ -74,14 +75,14 @@ export default class MyPlugin extends Plugin {
                         const parents = this.noteRenamer.findParents(file)
                         const parentFile = parents.find((f) => f.basename == parentNoteName)
                         if (parentFile) {
-                            this.app.workspace.activeLeaf.openFile(parentFile).then()
-                        }else{
+                            openNoteInSplit(this.app, parentFile)
+                        } else {
                             new Notice("File does not exists. Create new one")
-                            this.app.vault.create('notes/' + parentNoteName + '.md', "# " + parentNoteName).then(
-                                (f) => this.app.workspace.activeLeaf.openFile(f).then()
+                            this.app.vault.create('notes/' + parentNoteName + '.md', `# ${parentNoteName}\n\n## References\n\n## Links\n\n## Notes\n\n`).then(
+                                (f) => openNoteInSplit(this.app, f)
                             )
                         }
-                    }else{
+                    } else {
                         new Notice("Root node")
                     }
                 }

@@ -1,4 +1,5 @@
 import {App, FuzzySuggestModal, TFile} from "obsidian";
+import {openNoteInSplit} from "./utils";
 
 export class NoteFinderModal extends FuzzySuggestModal<string> {
     public constructor(app: App, private items: TFile[]) {
@@ -17,7 +18,7 @@ export class NoteFinderModal extends FuzzySuggestModal<string> {
 
     onChooseItem(item: string, evt: MouseEvent | KeyboardEvent): void {
         console.log(item)
-        this.app.workspace.activeLeaf.openFile(this.items.find((f) => f.basename == item)).then()
+        openNoteInSplit(this.app, this.items.find((f) => f.basename == item))
     }
 
     onClose() {
