@@ -1,17 +1,17 @@
-import {Modal, TextComponent, TFile} from "obsidian";
-import MyPlugin from "./main";
+import {App, Modal, TextComponent, TFile} from "obsidian";
+import {NoteRenamer} from "../helpers/noteRenamer";
 
 export class NoteRenameModal extends Modal {
     private inputField: TextComponent
 
-    constructor(private plugin: MyPlugin, private file: TFile) {
-        super(plugin.app);
+    constructor(app: App, private file: TFile, private noteRenamer: NoteRenamer) {
+        super(app);
         this.open()
     }
 
     private rename() {
         const file = this.app.workspace.getActiveFile()
-        this.plugin.noteRenamer.renameNote(file, this.inputField.getValue()).then(() => {
+        this.noteRenamer.renameNote(file, this.inputField.getValue()).then(() => {
             this.close()
         })
     }

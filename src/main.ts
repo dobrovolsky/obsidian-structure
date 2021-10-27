@@ -1,99 +1,32 @@
-import {App, Notice, Plugin, PluginManifest} from 'obsidian';
-import {SettingTab} from "./settingsTab";
-import {NoteFinderModal} from "./noteFinderModal";
-import {NoteRenameModal} from "./noteRenameModal";
-import {NoteRenamer} from "./noteRenamer";
-import {openNoteInSplit} from "./utils";
+import {App, Plugin, PluginManifest} from 'obsidian';
+import {NoteRenamer} from "./helpers/noteRenamer";
+import {NoteFinder} from "./helpers/noteFinder";
+import {Actions} from "./actions";
+import {Settings} from "./settings/types";
+import {SettingTab} from "./settings/settingsTab";
+import {DEFAULT_SETTINGS} from "./settings/defaults";
+import {NoteOpener} from "./helpers/noteOpener";
 
-interface MyPluginSettings {
-    mySetting: string;
-}
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-    mySetting: 'default'
-}
-
-export default class MyPlugin extends Plugin {
-    settings: MyPluginSettings;
+export default class StructurePlugin extends Plugin {
+    settings: Settings;
     noteRenamer: NoteRenamer
+    finder: NoteFinder;
 
     constructor(app: App, manifest: PluginManifest) {
         super(app, manifest);
-        this.noteRenamer = new NoteRenamer(app);
 
+        this.finder = new NoteFinder(app)
+        this.noteRenamer = new NoteRenamer(app, this.finder);
     }
 
     async onload() {
-        console.log('loading plugin');
         await this.loadSettings();
-        this.initDevTools();
-
         this.addSettingTab(new SettingTab(this.app, this));
-
-        this.addCommand({
-            id: 'renameNote',
-            name: 'Rename current note',
-            callback: () => { // @ts-ignore - for this.app.plugins
-                const file = this.app.workspace.getActiveFile()
-                if (file != null) {
-                    new NoteRenameModal(this, file)
-                }
-            },
-        });
-        this.addCommand({
-            id: 'getChildrenNotes',
-            name: 'Get children notes',
-            callback: () => {
-                const file = this.app.workspace.getActiveFile()
-                if (file != null) {
-                    const children = this.noteRenamer.findChildren(file)
-                    console.log(children)
-                    new NoteFinderModal(this.app, children).open();
-                }
-            }
-        });
-        this.addCommand({
-            id: 'getParentNotes',
-            name: 'Get parents notes',
-            callback: () => {
-                const file = this.app.workspace.getActiveFile()
-                if (file != null) {
-                    const parents = this.noteRenamer.findParents(file)
-                    new NoteFinderModal(this.app, parents).open();
-                }
-            }
-        });
-        this.addCommand({
-            id: 'openParentNotes',
-            name: 'open parent note',
-            callback: () => {
-                const file = this.app.workspace.getActiveFile()
-                if (file != null) {
-                    const parentNoteName = this.noteRenamer.getParentName(file)
-
-                    if (parentNoteName !== null) {
-                        const parents = this.noteRenamer.findParents(file)
-                        const parentFile = parents.find((f) => f.basename == parentNoteName)
-                        if (parentFile) {
-                            openNoteInSplit(this.app, parentFile)
-                        } else {
-                            new Notice("File does not exists. Create new one")
-                            this.app.vault.create('notes/' + parentNoteName + '.md', `# ${parentNoteName}\n\n## References\n\n## Links\n\n## Notes\n\n`).then(
-                                (f) => openNoteInSplit(this.app, f)
-                            )
-                        }
-                    } else {
-                        new Notice("Root node")
-                    }
-                }
-            }
-        });
-
-
+        this.addCommands();
     }
 
     onunload() {
-        console.log('unloading plugin');
     }
 
     async loadSettings() {
@@ -102,9 +35,34 @@ export default class MyPlugin extends Plugin {
 
     async saveSettings() {
         await this.saveData(this.settings);
+        this.addCommands();
     }
 
-    initDevTools() {
+    addCommands = () => {
+        const noteOpener = new NoteOpener(this.app, this.settings)
+        const actions = new Actions(this.app, this.settings, this.finder, this.noteRenamer, noteOpener);
+
+        this.addCommand({
+            id: 'renameNote',
+            name: 'Rename current note',
+            callback: actions.onRename,
+        });
+        this.addCommand({
+            id: 'getChildrenNotes',
+            name: 'Get children notes',
+            callback: actions.onGetChild
+        });
+        this.addCommand({
+            id: 'getParentNotes',
+            name: 'Get parents notes',
+            callback: actions.onGetParent
+        });
+        this.addCommand({
+            id: 'openParentNotes',
+            name: 'open parent note',
+            callback: actions.onOpenParent
+        });
+
         this.addCommand({
             id: 'reloadPlugin',
             name: 'Reload Plugin (dev)',
@@ -113,5 +71,6 @@ export default class MyPlugin extends Plugin {
                 plugins.disablePlugin(id).then(() => plugins.enablePlugin(id));
             },
         });
+
     }
 }
