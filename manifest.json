@@ -3,8 +3,8 @@
     "name": "Structured Plugin",
     "version": "1.0.1",
     "minAppVersion": "0.9.12",
-    "description": "My personal structured plugin",
-    "author": "Bohdan Dobrovolskyi",
-    "authorUrl": "https://obsidian.md/about",
+    "description": "Structured plugin. Create hierarchy in notes using . ",
+    "author": "dobrovolsky",
+    "authorUrl": "https://github.com/dobrovolsky/obsidain-structure",
     "isDesktopOnly": false
 }
