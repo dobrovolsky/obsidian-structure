@@ -20,3 +20,7 @@ Example: `aws`, `aws.ec2`, `aws.ec2.security-groups`
 Add keybinding for plugin actions.
 
 To find all available commands `ctrl+p` / `cmd+p` and type `structured`
+
+## TODOs
+
+- [ ] Creating a new note command
