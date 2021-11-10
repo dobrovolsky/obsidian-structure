@@ -6,7 +6,7 @@ import { Settings } from './settings/types'
 import { SettingTab } from './settings/settingsTab'
 import { DEFAULT_SETTINGS } from './settings/defaults'
 import { NoteOpener } from './helpers/noteOpener'
-import {NoteCreator} from "./helpers/noteCreator";
+import { NoteCreator } from './helpers/noteCreator'
 
 export default class StructurePlugin extends Plugin {
     settings: Settings
@@ -79,13 +79,14 @@ export default class StructurePlugin extends Plugin {
             callback: actions.onOpenParent,
         })
 
-        this.addCommand({
-            id: 'reloadPlugin',
-            name: 'Reload Plugin (dev)',
-            callback: async () => { // @ts-ignore - for this.app.plugins
-                const id: string = this.manifest.id, plugins = this.app.plugins;
-                plugins.disablePlugin(id).then(() => plugins.enablePlugin(id));
-            },
-        });
+        // this.addCommand({
+        //     id: 'reloadPlugin',
+        //     name: 'Reload Plugin (dev)',
+        //     callback: async () => {
+        //         // @ts-ignore - for this.app.plugins
+        //         const id: string = this.manifest.id, plugins = this.app.plugins
+        //         plugins.disablePlugin(id).then(() => plugins.enablePlugin(id))
+        //     },
+        // })
     }
 }

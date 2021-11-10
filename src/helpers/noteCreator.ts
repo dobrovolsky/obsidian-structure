@@ -1,12 +1,14 @@
-import {App, normalizePath, Notice, TFile} from 'obsidian'
-import {Settings} from '../settings/types'
-import {join} from 'path'
+import { App, normalizePath, Notice, TFile } from 'obsidian'
+import { Settings } from '../settings/types'
+import { join } from 'path'
 
 export class NoteCreator {
-    constructor(private app: App, private settings: Settings) {
-    }
+    constructor(private app: App, private settings: Settings) {}
 
-    createWithTemplate = async (filePath: string, noteName: string): Promise<TFile> => {
+    createWithTemplate = async (
+        filePath: string,
+        noteName: string
+    ): Promise<TFile> => {
         const newFile = this.app.vault.getAbstractFileByPath(
             normalizePath(this.settings.templatePath)
         )
@@ -24,9 +26,11 @@ export class NoteCreator {
             }
         }
         return this.app.vault.create(filePath, content)
-
     }
-    createParentNote = async (currentFile: TFile, parentNoteName: string): Promise<TFile> => {
+    createParentNote = async (
+        currentFile: TFile,
+        parentNoteName: string
+    ): Promise<TFile> => {
         if (this.settings.createParent) {
             new Notice('Parent does not exists. Create new one')
 

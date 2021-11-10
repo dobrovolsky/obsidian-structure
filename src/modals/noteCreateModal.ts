@@ -1,57 +1,61 @@
-import {App, Modal, TextComponent, TFile} from 'obsidian'
-import {NoteRenamer} from '../helpers/noteRenamer'
-import {NoteCreator} from "../helpers/noteCreator";
-import {join} from "path";
-import {NoteOpener} from "../helpers/noteOpener";
+import { App, SuggestModal, TFile } from 'obsidian'
+import { NoteCreator } from '../helpers/noteCreator'
+import { NoteOpener } from '../helpers/noteOpener'
+import { NoteFinder } from '../helpers/noteFinder'
 
-export class NoteCreateModal extends Modal {
-    private inputField: TextComponent
+export class NoteCreateModal extends SuggestModal<string> {
+    emptyText = 'Empty text (replace with nothing)'
+    private notes: string[]
 
     constructor(
         app: App,
         private noteCreator: NoteCreator,
         private noteOpener: NoteOpener,
-        private file?: TFile,
+        private noteFinder: NoteFinder,
+        private file?: TFile
     ) {
         super(app)
+        this.notes = this.noteFinder.findNotes().map((f) => f.basename)
+        if (file) {
+            this.inputEl.value = file.basename
+        }
+
         this.open()
     }
 
-    onOpen() {
-        let {contentEl} = this
-        this.titleEl.setText(`Create note:`)
-        this.inputField = new TextComponent(contentEl)
-
-        if (this.file) {
-            this.inputField.setValue(
-                this.file.basename
+    getSuggestions(query: string): string[] {
+        let items = [query]
+        items.push(
+            ...this.notes.filter((i) =>
+                i.toLocaleLowerCase().includes(query.toLocaleLowerCase())
             )
-        }
-
-        this.inputField.inputEl.addEventListener('keypress', async (keypressed) => {
-            const noteName = this.inputField.getValue()
-
-            if (keypressed.key === 'Enter') {
-                let parentFilePath = noteName + '.md'
-                if (this.file) {
-                    parentFilePath = join(
-                        this.file.parent.path,
-                        parentFilePath
-                    )
-                }
-                await this.noteOpener.openNote(await this.noteCreator.createWithTemplate(parentFilePath, noteName))
-                this.close()
-            }
-        })
-
-        this.inputField.inputEl.className = 'prompt-input'
-        this.modalEl.className = 'prompt'
-
-        this.inputField.inputEl.focus()
+        )
+        return items
     }
 
-    onClose() {
-        let {contentEl} = this
-        contentEl.empty()
+    selectSuggestion(value: string, evt: MouseEvent | KeyboardEvent) {
+        if (!this.notes.find((n) => n == value)) {
+            super.selectSuggestion(value, evt)
+            return
+        }
+
+        this.inputEl.value = value
+    }
+
+    renderSuggestion(value: string, el: HTMLElement): void {
+        el.innerText = value
+    }
+
+    async onChooseSuggestion(
+        item: string,
+        _: MouseEvent | KeyboardEvent
+    ): Promise<void> {
+        let file
+        if (this.file) {
+            file = await this.noteCreator.createParentNote(this.file, item)
+        } else {
+            file = await this.noteCreator.createWithTemplate(item + '.md', item)
+        }
+        await this.noteOpener.openNote(file)
     }
 }

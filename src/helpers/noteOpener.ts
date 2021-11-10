@@ -1,9 +1,8 @@
-import {App, TFile} from 'obsidian'
-import {Settings} from '../settings/types'
+import { App, TFile } from 'obsidian'
+import { Settings } from '../settings/types'
 
 export class NoteOpener {
-    constructor(private app: App, private settings: Settings) {
-    }
+    constructor(private app: App, private settings: Settings) {}
 
     private openNoteInSplit = async (file: TFile) => {
         const leaf = this.app.workspace.createLeafBySplit(
