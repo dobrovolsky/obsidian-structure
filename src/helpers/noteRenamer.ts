@@ -15,7 +15,6 @@ export class NoteRenamer {
             }
         })
 
-        console.log(newNotesNames)
         for (const f of newNotesNames) {
             await this.app.fileManager.renameFile(f.file, f.newPath)
         }

@@ -13,13 +13,10 @@ export class NoteRenameModal extends Modal {
         this.open()
     }
 
-    private rename() {
+    private async rename() {
         const file = this.app.workspace.getActiveFile()
-        this.noteRenamer
-            .renameNote(file, this.inputField.getValue())
-            .then(() => {
-                this.close()
-            })
+        await this.noteRenamer.renameNote(file, this.inputField.getValue())
+        this.close()
     }
 
     onOpen() {
@@ -29,9 +26,9 @@ export class NoteRenameModal extends Modal {
             this.file.basename
         )
 
-        this.inputField.inputEl.addEventListener('keypress', (keypressed) => {
+        this.inputField.inputEl.addEventListener('keypress', async (keypressed) => {
             if (keypressed.key === 'Enter') {
-                this.rename()
+                await this.rename()
             }
         })
 

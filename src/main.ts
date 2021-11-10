@@ -6,6 +6,7 @@ import { Settings } from './settings/types'
 import { SettingTab } from './settings/settingsTab'
 import { DEFAULT_SETTINGS } from './settings/defaults'
 import { NoteOpener } from './helpers/noteOpener'
+import {NoteCreator} from "./helpers/noteCreator";
 
 export default class StructurePlugin extends Plugin {
     settings: Settings
@@ -42,18 +43,25 @@ export default class StructurePlugin extends Plugin {
 
     addCommands = () => {
         const noteOpener = new NoteOpener(this.app, this.settings)
+        const noteCreator = new NoteCreator(this.app, this.settings)
         const actions = new Actions(
             this.app,
             this.settings,
             this.finder,
             this.noteRenamer,
-            noteOpener
+            noteOpener,
+            noteCreator
         )
 
         this.addCommand({
             id: 'renameNote',
             name: 'Rename current note',
             callback: actions.onRename,
+        })
+        this.addCommand({
+            id: 'createNote',
+            name: 'Create a note',
+            callback: actions.onCreate,
         })
         this.addCommand({
             id: 'getChildrenNotes',
@@ -71,13 +79,13 @@ export default class StructurePlugin extends Plugin {
             callback: actions.onOpenParent,
         })
 
-        // this.addCommand({
-        //     id: 'reloadPlugin',
-        //     name: 'Reload Plugin (dev)',
-        //     callback: async () => { // @ts-ignore - for this.app.plugins
-        //         const id: string = this.manifest.id, plugins = this.app.plugins;
-        //         plugins.disablePlugin(id).then(() => plugins.enablePlugin(id));
-        //     },
-        // });
+        this.addCommand({
+            id: 'reloadPlugin',
+            name: 'Reload Plugin (dev)',
+            callback: async () => { // @ts-ignore - for this.app.plugins
+                const id: string = this.manifest.id, plugins = this.app.plugins;
+                plugins.disablePlugin(id).then(() => plugins.enablePlugin(id));
+            },
+        });
     }
 }
