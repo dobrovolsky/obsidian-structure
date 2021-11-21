@@ -23,7 +23,7 @@ export class NoteFinder {
         const allNotes = this.findNotes()
         return allNotes.filter((n) => {
             return (
-                getFullPathWithoutExtension(file.path).includes(
+                getFullPathWithoutExtension(file.path).startsWith(
                     getFullPathWithoutExtension(n.path)
                 ) &&
                 n.parent == file.parent &&
@@ -33,7 +33,7 @@ export class NoteFinder {
     }
 
     findNotes(): TFile[] {
-        return this.app.vault.getFiles().filter((f) => f.extension == 'md')
+        return this.app.vault.getMarkdownFiles()
     }
 
     getParentName(file: TFile): string | null {

@@ -1,13 +1,13 @@
-import { App, TFile } from 'obsidian'
+import { App, MarkdownView, TFile } from 'obsidian'
 import { Settings } from '../settings/types'
 
 export class NoteOpener {
     constructor(private app: App, private settings: Settings) {}
 
     private openNoteInSplit = async (file: TFile) => {
-        const leaf = this.app.workspace.createLeafBySplit(
-            this.app.workspace.activeLeaf
-        )
+        const view = this.app.workspace.getActiveViewOfType(MarkdownView)
+
+        const leaf = this.app.workspace.createLeafBySplit(view.leaf)
         await leaf.openFile(file)
         this.app.workspace.setActiveLeaf(leaf)
     }
@@ -16,7 +16,8 @@ export class NoteOpener {
         if (this.settings.openInSplit) {
             await this.openNoteInSplit(file)
         } else {
-            await this.app.workspace.activeLeaf.openFile(file)
+            const view = this.app.workspace.getActiveViewOfType(MarkdownView)
+            await view.leaf.openFile(file)
         }
     }
 }
