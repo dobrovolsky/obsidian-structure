@@ -24,7 +24,8 @@ export class NoteCreator {
                 content = ''
             }
         }
-        return this.app.vault.create(filePath, content)
+        let filePathNormalized = normalizePath(filePath)
+        return this.app.vault.create(filePathNormalized, content)
     }
 
     createParentNote = async (

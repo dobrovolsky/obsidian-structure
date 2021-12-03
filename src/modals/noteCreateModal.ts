@@ -1,4 +1,4 @@
-import { App, SuggestModal, TFile } from 'obsidian'
+import {App, SuggestModal, TFile} from 'obsidian'
 import { NoteCreator } from '../helpers/noteCreator'
 import { NoteOpener } from '../helpers/noteOpener'
 import { NoteFinder } from '../helpers/noteFinder'
@@ -50,12 +50,13 @@ export class NoteCreateModal extends SuggestModal<string> {
         item: string,
         _: MouseEvent | KeyboardEvent
     ): Promise<void> {
-        let file
+        let filePath = item + '.md'
+
         if (this.file) {
-            file = await this.noteCreator.createParentNote(this.file, item)
-        } else {
-            file = await this.noteCreator.createWithTemplate(item + '.md', item)
+            filePath = this.file.parent.path + '/' + filePath
         }
+
+        let file = await this.noteCreator.createWithTemplate(filePath, item)
         await this.noteOpener.openNote(file)
     }
 }
