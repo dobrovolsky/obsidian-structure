@@ -20,7 +20,10 @@ export class NoteFinderModal extends FuzzySuggestModal<string> {
     }
 
     onChooseItem(item: string, evt: MouseEvent | KeyboardEvent): void {
-        this.noteOpener.openNote(this.items.find((f) => f.basename == item))
+        const note = this.items.find((f) => f.basename == item)
+        if (note){
+            this.noteOpener.openNote(note).then()
+        }
     }
 
     onClose() {

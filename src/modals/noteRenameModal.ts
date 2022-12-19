@@ -15,7 +15,9 @@ export class NoteRenameModal extends Modal {
 
     private async rename() {
         const file = this.app.workspace.getActiveFile()
-        await this.noteRenamer.renameNote(file, this.inputField.getValue())
+        if (file !== null){
+            await this.noteRenamer.renameNote(file, this.inputField.getValue())
+        }
         this.close()
     }
 
