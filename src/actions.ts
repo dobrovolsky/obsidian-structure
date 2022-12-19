@@ -32,14 +32,14 @@ export class Actions {
 
     onRename = () => {
         const file = this.app.workspace.getActiveFile()
-        if (file != null) {
+        if (file !== null) {
             new NoteRenameModal(this.app, file, this.noteRenamer)
         }
     }
 
     onGetChild = () => {
         const file = this.app.workspace.getActiveFile()
-        if (file != null) {
+        if (file !== null) {
             const children = this.finder.findChildren(file)
             new NoteFinderModal(this.app, this.noteOpener, children).open()
         }
@@ -47,7 +47,7 @@ export class Actions {
 
     onGetParent = () => {
         const file = this.app.workspace.getActiveFile()
-        if (file != null) {
+        if (file !== null) {
             const parents = this.finder.findParents(file)
             new NoteFinderModal(this.app, this.noteOpener, parents).open()
         }
@@ -55,7 +55,7 @@ export class Actions {
 
     onOpenParent = async () => {
         const file = this.app.workspace.getActiveFile()
-        if (file != null) {
+        if (file !== null) {
             const parentNoteName = this.finder.getParentName(file)
 
             if (parentNoteName !== null) {
@@ -66,12 +66,14 @@ export class Actions {
                 if (parentFile) {
                     await this.noteOpener.openNote(parentFile)
                 } else {
-                    await this.noteOpener.openNote(
-                        await this.noteCreator.createParentNote(
-                            file,
-                            parentNoteName
-                        )
+                    const newNote = await this.noteCreator.createParentNote(
+                        file,
+                        parentNoteName
                     )
+                    if (newNote){
+                        await this.noteOpener.openNote(newNote)
+                    }
+
                 }
             } else {
                 new Notice('Root node')

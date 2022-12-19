@@ -1,7 +1,12 @@
 import { App, TFile } from 'obsidian'
 
 const getFullPathWithoutExtension = (path: string): string => {
-    const extLength = path.split('.').pop().length + 1
+    const extention = path.split('.').pop()
+    if (!extention){
+        return ""
+    }
+
+    const extLength = extention.length + 1
     return path.slice(0, path.length - extLength)
 }
 

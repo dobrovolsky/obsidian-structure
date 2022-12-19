@@ -12,7 +12,7 @@ export class NoteCreator {
             normalizePath(this.settings.templatePath)
         )
 
-        let content
+        let content = ''
         if (this.settings.templatePath) {
             if (newFile && newFile instanceof TFile) {
                 content = await this.app.vault.cachedRead(newFile)
@@ -24,6 +24,7 @@ export class NoteCreator {
                 content = ''
             }
         }
+
         let filePathNormalized = normalizePath(filePath)
         return this.app.vault.create(filePathNormalized, content)
     }
@@ -31,7 +32,7 @@ export class NoteCreator {
     createParentNote = async (
         currentFile: TFile,
         parentNoteName: string
-    ): Promise<TFile> => {
+    ): Promise<TFile | null> => {
         if (this.settings.createParent) {
             new Notice('Parent does not exists. Create new one')
             const parentFilePath = normalizePath(
@@ -40,6 +41,7 @@ export class NoteCreator {
             return this.createWithTemplate(parentFilePath, parentNoteName)
         } else {
             new Notice('Parent does not exists.')
+            return null
         }
     }
 }

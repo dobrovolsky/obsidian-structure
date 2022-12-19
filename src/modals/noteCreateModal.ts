@@ -12,7 +12,7 @@ export class NoteCreateModal extends SuggestModal<string> {
         private noteCreator: NoteCreator,
         private noteOpener: NoteOpener,
         private noteFinder: NoteFinder,
-        private file?: TFile
+        private file: TFile | null
     ) {
         super(app)
         this.notes = this.noteFinder.findNotes().map((f) => f.basename)
