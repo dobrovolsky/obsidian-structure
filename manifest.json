@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-structured-plugin",
 	"name": "Structured Plugin",
-	"version": "0.14.1",
+	"version": "0.14.2",
 	"minAppVersion": "1.0.3",
 	"description": "Structured plugin. Create hierarchy in notes using . ",
 	"author": "dobrovolsky",
