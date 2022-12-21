@@ -1,4 +1,4 @@
-import {App, SuggestModal, TFile} from 'obsidian'
+import { App, Notice, SuggestModal, TFile } from 'obsidian'
 import { NoteCreator } from '../helpers/noteCreator'
 import { NoteOpener } from '../helpers/noteOpener'
 import { NoteFinder } from '../helpers/noteFinder'
@@ -24,22 +24,28 @@ export class NoteCreateModal extends SuggestModal<string> {
     }
 
     getSuggestions(query: string): string[] {
-        let items = [query]
+        let items = []
+
+        if (query !== ''){
+            items.push(query)
+        }
         items.push(
             ...this.notes.filter((i) =>
-                i.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+                i.toLocaleLowerCase().includes(query.toLocaleLowerCase()) && query !== i
             )
         )
         return items
     }
 
     selectSuggestion(value: string, evt: MouseEvent | KeyboardEvent) {
+        // Note does not exist proceed to onChooseSuggestion
         if (!this.notes.find((n) => n == value)) {
             super.selectSuggestion(value, evt)
             return
         }
 
         this.inputEl.value = value
+        this.inputEl.dispatchEvent(new Event('input'));
     }
 
     renderSuggestion(value: string, el: HTMLElement): void {
